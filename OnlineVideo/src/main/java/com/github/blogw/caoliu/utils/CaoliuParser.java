@@ -59,7 +59,14 @@ public class CaoliuParser {
 
     private static void up2stream(String url, PageLink pl) throws Exception {
         pl.setReferer2(url);
-        String page = HttpUtils.readUrl(url);
+        String page;
+
+        try{
+            page= HttpUtils.readUrl(url);
+        }
+        catch(Exception e){
+            return;
+        }
 
         // poster url
         Pattern p1 = Pattern.compile("<video.*poster=\"(.*?)\"", Pattern.DOTALL | Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);

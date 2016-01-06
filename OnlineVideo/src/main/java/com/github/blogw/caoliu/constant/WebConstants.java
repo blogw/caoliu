@@ -16,5 +16,7 @@ public class WebConstants {
 
     public final static String SAVE_FOLDER = "c:/caoliu/";
 
+    public final static String OVER_FOLDER = "c:/caoliu/over";
+
     public final static String TMP_SUFFIX = "!";
 }

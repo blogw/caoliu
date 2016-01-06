@@ -2,6 +2,7 @@ package com.github.blogw.download;
 
 import com.github.blogw.caoliu.Progress;
 import com.github.blogw.caoliu.beans.PageLink;
+import com.github.blogw.caoliu.utils.CaoliuParser;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpEntity;
@@ -25,6 +26,7 @@ public class Manager {
 
     public static boolean start(PageLink pl) {
         retry = RETRY;
+        // http://stackoverflow.com/questions/20498831/refused-to-display-in-a-frame-because-it-set-x-frame-options-to-sameorigin
         long size = checkSize(pl.getVideoUrl(), pl.getReferer2());
         pl.setSize(size);
 
@@ -97,8 +99,7 @@ public class Manager {
                 return size;
             } else {
                 log.error(LOG_PREFIX + "status code is " + statusCode);
-                retry--;
-                return checkSize(url, referer);
+                return -1*statusCode;
             }
         } catch (Exception e) {
             log.error(LOG_PREFIX + e.getMessage());

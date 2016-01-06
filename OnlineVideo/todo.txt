@@ -7,3 +7,6 @@ Todo：
 2.失败写入log
 3.多线程下载1个文件
 4.gui
+
+
+ffmpeg -i a.mp4 -s 240*426 -fs 5000K c.mp4

@@ -99,18 +99,10 @@ public class Ant implements Runnable {
             } else {
                 log.error(prefix + "status code is " + statusCode);
                 status = TaskStatus.ERROR;
-                Thread.sleep(2000);
-                download();
             }
         } catch (Exception e) {
             e.printStackTrace();
             status = TaskStatus.ERROR;
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e1) {
-                e1.printStackTrace();
-            }
-            download();
         } finally {
             try {
                 httpClient.close();

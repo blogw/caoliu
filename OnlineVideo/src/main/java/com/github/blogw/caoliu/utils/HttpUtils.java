@@ -5,10 +5,14 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.Header;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 
 import java.io.StringWriter;
 
@@ -29,7 +33,11 @@ public class HttpUtils {
         CloseableHttpClient httpClient = HttpClients.createDefault();
 
         // new HttpGet instance
+        RequestConfig requestConfig = RequestConfig.custom()
+                .setConnectTimeout(5000).setConnectionRequestTimeout(3000)
+                .setSocketTimeout(5000).build();
         HttpGet httpGet = new HttpGet(url);
+        httpGet.setConfig(requestConfig);
 
         // set http header
         httpGet.addHeader("User-Agent", WebConstants.USER_AGENT);
