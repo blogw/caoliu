@@ -2,7 +2,6 @@ package com.github.blogw.download;
 
 import com.github.blogw.caoliu.Progress;
 import com.github.blogw.caoliu.beans.PageLink;
-import com.github.blogw.caoliu.utils.CaoliuParser;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpEntity;
@@ -85,7 +84,7 @@ public class Manager {
         try {
             // define http get
             HttpGet httpGet = new HttpGet(url);
-            httpGet.addHeader("User-Agent", USER_AGENT);
+            httpGet.addHeader("User-Agent", USER_AGENT_IPHONE6);
             httpGet.addHeader("Referer", referer);
 
             // execute http get

@@ -2,21 +2,11 @@ package com.github.blogw.caoliu.utils;
 
 import com.github.blogw.caoliu.VedioType;
 import com.github.blogw.caoliu.beans.PageLink;
-import com.github.blogw.caoliu.constant.WebConstants;
-import com.github.blogw.download.Manager;
-import org.apache.commons.io.FileUtils;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
+import com.github.blogw.caoliu.parser.DetailPageParser;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.InputStreamReader;
-import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -30,6 +20,7 @@ public class CaoliuParser {
 
             Pattern pattern = Pattern.compile("<embed src=\"(.*?)\"", Pattern.DOTALL | Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
             Matcher matcher = pattern.matcher(page1);
+
             if (matcher.find()) {
                 pl.setType(VedioType.DEFAULT);
                 up2stream(matcher.group(1), pl);
@@ -48,8 +39,23 @@ public class CaoliuParser {
                     if (m.find()) {
                         pptcc(m.group(1), pl);
                     }
+                } else if (page1.indexOf("9p91.com") > 0) {
+                    DetailPageParser p = (DetailPageParser) Class.forName("com.github.blogw.caoliu.parser.Parser9P91").newInstance();
+                    p.parse(page1, pl);
+                } else if (page1.indexOf("avtaobao.me") > 0) {
+                    DetailPageParser p = (DetailPageParser) Class.forName("com.github.blogw.caoliu.parser.ParserAVTaoBao").newInstance();
+                    p.parse(page1, pl);
+                } else if (page1.indexOf("tadpoles.online") > 0) {
+                    DetailPageParser p = (DetailPageParser) Class.forName("com.github.blogw.caoliu.parser.ParserTadPoles").newInstance();
+                    p.parse(page1, pl);
+                } else if (page1.indexOf("p9p.co") > 0) {
+                    DetailPageParser p = (DetailPageParser) Class.forName("com.github.blogw.caoliu.parser.ParserP9P").newInstance();
+                    p.parse(page1, pl);
+                } else if (page1.indexOf("qingyule.me") > 0) {
+                    DetailPageParser p = (DetailPageParser) Class.forName("com.github.blogw.caoliu.parser.ParserP9P").newInstance();
+                    p.parse(page1, pl);
                 } else {
-                    //TODO: 其他未处理的站点
+                    System.out.println(pl.getTxt()+"==>"+pl.getUrl());
                 }
             }
         } catch (Exception e) {
@@ -61,10 +67,9 @@ public class CaoliuParser {
         pl.setReferer2(url);
         String page;
 
-        try{
-            page= HttpUtils.readUrl(url);
-        }
-        catch(Exception e){
+        try {
+            page = HttpUtils.readUrl(url);
+        } catch (Exception e) {
             return;
         }
 

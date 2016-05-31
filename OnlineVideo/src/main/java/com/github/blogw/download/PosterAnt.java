@@ -37,7 +37,7 @@ public class PosterAnt implements Runnable {
         try {
             // define http get
             HttpGet httpGet = new HttpGet(pl.getPosterUrl());
-            httpGet.addHeader("User-Agent", USER_AGENT);
+            httpGet.addHeader("User-Agent", USER_AGENT_IPHONE6);
             httpGet.addHeader("Referer", pl.getReferer2());
 
             // execute http get

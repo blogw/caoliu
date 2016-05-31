@@ -1,7 +1,5 @@
 package com.github.blogw.download;
 
-import static com.github.blogw.caoliu.constant.WebConstants.*;
-
 import com.github.blogw.caoliu.beans.PageLink;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -14,6 +12,8 @@ import org.apache.http.impl.client.HttpClients;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
+
+import static com.github.blogw.caoliu.constant.WebConstants.*;
 
 /**
  * download
@@ -51,7 +51,7 @@ public class Ant implements Runnable {
         try {
             // define http get
             HttpGet httpGet = new HttpGet(pl.getVideoUrl());
-            httpGet.addHeader("User-Agent", USER_AGENT);
+            httpGet.addHeader("User-Agent", USER_AGENT_IPHONE6);
             httpGet.addHeader("Referer", pl.getReferer2());
 
             // execute http get
