@@ -20,8 +20,11 @@ public class PageLink implements Serializable{
     private String posterUrl;
     private String video;
     private String videoUrl;
-    private long size;
+    private int size;
 
+    public PageLink(){
+
+    }
     public PageLink(String txt,String href,String time,String referer){
         this.txt=txt;
         this.href=href;
@@ -121,11 +124,11 @@ public class PageLink implements Serializable{
         this.videoUrl = videoUrl;
     }
 
-    public long getSize() {
+    public int getSize() {
         return size;
     }
 
-    public void setSize(long size) {
+    public void setSize(int size) {
         this.size = size;
     }
 }

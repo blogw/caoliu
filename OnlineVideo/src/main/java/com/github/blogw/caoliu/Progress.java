@@ -27,7 +27,10 @@ public class Progress {
         streamToUse.print(CARRIAGE_RETURN);
     }
 
-    public static void main(String[] args) {
-        Progress.on(System.out,100).tick(49);
+    public static void main(String[] args) throws InterruptedException {
+        for(int i=1;i<99;i++) {
+            Progress.on(System.out, 100).tick(i);
+            Thread.sleep(1000);
+        }
     }
 }

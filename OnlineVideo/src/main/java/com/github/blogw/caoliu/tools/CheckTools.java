@@ -20,9 +20,9 @@ public class CheckTools {
 
     public static void main(String[] args) throws Exception {
         Stack<PageLink> newStack = new Stack<>();
-        String newFile = "d:/caoliu/tasks-20160528-need-analyze.obj";
+        String newFile = "d:/caoliu/tasks2-20160603-need-analyze.obj";
 
-        String file = "d:/caoliu/tasks-20160528.obj";
+        String file = "d:/caoliu/tasks2-20160603.obj";
         Stack<PageLink> stack = (Stack<PageLink>) Obj2DiskUtils.deserialize(file);
         Iterator<PageLink> it = stack.iterator();
 
@@ -39,37 +39,12 @@ public class CheckTools {
         stack.removeAll(newStack);
 
         // step 2
-        // TODO: handle char of �
-        it = stack.iterator();
-        while (it.hasNext()) {
-            PageLink pl = it.next();
-            String name=pl.getTxt();
-            if(name.indexOf("�")>=0){
-                if(name.indexOf("2个极品长腿美少女")>=0){
-                    pl.setTxt("2个极品长腿美少女 在化妆室刮屄毛");
-                }
-                if(name.indexOf("中字 马上和绘�e香来一炮吧 第1幕")>=0){
-                    pl.setTxt("中字 马上和绘裡香来一炮吧 第1幕");
-                }
-                if(name.indexOf("中字 马上和绘�e香来一炮吧 第2幕")>=0){
-                    pl.setTxt("中字 马上和绘裡香来一炮吧 第2幕");
-                }
-                if(name.indexOf("�律褡懔菩〗�")>=0){
-                    pl.setTxt("大学生淫娃");
-                }
-            }
-        }
-
-        // step 3
         it = stack.iterator();
         while (it.hasNext()) {
             PageLink pl = it.next();
             String name = pl.getTxt();
             pl.setTxt(CaoliuUtils.folderNameFilter(name));
         }
-
-        // step 4
-        // TODO: poster and video name duplicated
 
         // save old stack
         Obj2DiskUtils.serialize(file, stack);

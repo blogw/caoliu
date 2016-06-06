@@ -2,6 +2,7 @@ package com.github.blogw.caoliu.utils;
 
 import com.github.blogw.caoliu.VedioType;
 import com.github.blogw.caoliu.beans.PageLink;
+import com.github.blogw.caoliu.constant.WebConstants;
 import com.github.blogw.caoliu.parser.DetailPageParser;
 
 import javax.script.ScriptEngine;
@@ -16,7 +17,7 @@ import java.util.regex.Pattern;
 public class CaoliuParser {
     public static void parse(PageLink pl) {
         try {
-            String page1 = HttpUtils.readUrl(pl.getUrl());
+            String page1 = HttpUtils.readUrl(pl.getUrl(), pl.getReferer2(), WebConstants.CAOLIU_ENCODE);
 
             Pattern pattern = Pattern.compile("<embed src=\"(.*?)\"", Pattern.DOTALL | Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
             Matcher matcher = pattern.matcher(page1);
@@ -54,8 +55,12 @@ public class CaoliuParser {
                 } else if (page1.indexOf("qingyule.me") > 0) {
                     DetailPageParser p = (DetailPageParser) Class.forName("com.github.blogw.caoliu.parser.ParserP9P").newInstance();
                     p.parse(page1, pl);
+                } else if (page1.indexOf("videoshare.space") > 0) {
+                    DetailPageParser p = (DetailPageParser) Class.forName("com.github.blogw.caoliu.parser.ParserVideoShare").newInstance();
+                    p.parse(page1, pl);
                 } else {
-                    System.out.println(pl.getTxt()+"==>"+pl.getUrl());
+                    System.out.println(pl.getTxt() + "==>" + pl.getUrl());
+                    //TODO: save to disk
                 }
             }
         } catch (Exception e) {
@@ -103,6 +108,8 @@ public class CaoliuParser {
         Matcher m = p.matcher(page);
         if (m.find()) {
             String u = m.group(1);
+            // 加入扰乱字符导致eval报错：Method code too large!
+            u = u.substring(0, u.indexOf('\n'))+";";
             u = u.replaceAll("return p", "return sb.append(p)");
             u = evalScript(u);
 
