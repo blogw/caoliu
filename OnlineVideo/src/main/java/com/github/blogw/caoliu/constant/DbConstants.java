@@ -12,8 +12,9 @@ public class DbConstants {
     public static final String VIDEO_TABLE_INSERT_SQL = "INSERT INTO video(url,txt,poster,postername,video,videoname,time,referer1,referer2,size,type,posterok,videook)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
     public static final String VIDEO_TALBE_UPDATE_POSTER_SQL = "UPDATE video SET poster=?,postername=?,video=?,videoname=?,referer2=?,type=? WHERE id=?";
+    public static final String VIDEO_TALBE_UPDATE_SIZE_SQL = "UPDATE video SET size=? WHERE id=?";
 
-    public static final String VIDEO_TALBE_UPDATE_VIDEO_SQL = "UPDATE video SET videoname=? WHERE id=?";
+    public static final String VIDEO_TALBE_DELETE_SQL = "DELETE FROM video WHERE id=?";
 
     public static final String VIDEO_TALBE_UPDATE_FINISH = "UPDATE video SET posterok=?,videook=? WHERE id=?";
 

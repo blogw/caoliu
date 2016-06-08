@@ -135,8 +135,18 @@ public class SqliteUtils {
         );
     }
 
+    public int updateSize(PageLink p) throws SQLException {
+        return this.execute(DbConstants.VIDEO_TALBE_UPDATE_SIZE_SQL,
+                p.getSize(), p.getId()
+        );
+    }
+
     public int finish(String ok1, String ok2, String id) throws SQLException {
         return this.execute(DbConstants.VIDEO_TALBE_UPDATE_FINISH, ok1, ok2, id);
+    }
+
+    public int delete(String id) throws SQLException {
+        return this.execute(DbConstants.VIDEO_TALBE_DELETE_SQL, id);
     }
 
     public int execute(String sql, Object... args) throws SQLException {

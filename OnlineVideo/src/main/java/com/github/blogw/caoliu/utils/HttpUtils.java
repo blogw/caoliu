@@ -81,15 +81,7 @@ public class HttpUtils {
 
     public static int downloadPoster(File dir, PageLink pl) {
         log.info("download " + pl.getPosterUrl());
-        return download(dir, pl.getPoster(), pl.getPosterUrl(), pl.getReferer2());
-    }
 
-    public static int downloadVideo(File dir, PageLink pl) {
-        log.info("download " + pl.getVideoUrl());
-        return download(dir, pl.getVideo(), pl.getVideoUrl(), pl.getReferer2());
-    }
-
-    private static int download(File dir, String name, String url, String referer) {
         if (!dir.exists()) {
             try {
                 FileUtils.forceMkdir(dir);
@@ -99,16 +91,18 @@ public class HttpUtils {
             }
         }
 
-        File target = new File(dir, name);
-        if (target.exists()) return 1;
+        File target = new File(dir, pl.getPoster());
+        if (target.exists()) {
+            FileUtils.deleteQuietly(target);
+        }
 
         CloseableHttpClient httpClient = HttpClients.createDefault();
 
         try {
             // define http get
-            HttpGet httpGet = new HttpGet(url);
+            HttpGet httpGet = new HttpGet(pl.getPosterUrl());
             httpGet.addHeader("User-Agent", USER_AGENT_IPHONE6);
-            httpGet.addHeader("Referer", referer);
+            httpGet.addHeader("Referer", pl.getReferer2());
 
             // execute http get
             CloseableHttpResponse httpResponse = httpClient.execute(httpGet);
@@ -122,6 +116,150 @@ public class HttpUtils {
                 byte[] buffer = new byte[BUFFER];
                 int read;
                 long total = 0;
+                InputStream is = entity.getContent();
+                while ((read = is.read(buffer, 0, buffer.length)) != -1) {
+                    raf.write(buffer, 0, read);
+                    total += read;
+                    Progress.on(System.out, size).tick(total);
+
+                    // change line when finish
+                    if (total >= size) {
+                        System.out.println("");
+                    }
+                }
+                raf.close();
+                is.close();
+                return 1;
+            } else {
+                log.error("status code is " + statusCode);
+                return statusCode;
+            }
+        } catch (Exception e) {
+            log.error("download error is " + e.getMessage());
+        } finally {
+            try {
+                httpClient.close();
+            } catch (IOException e) {
+                // ignore this error
+            }
+        }
+        return 0;
+    }
+
+    public static int downloadVideo(File dir, PageLink pl) {
+        log.info("download " + pl.getVideoUrl());
+        return download(dir, pl.getVideo(), pl.getVideoUrl(), pl);
+    }
+
+    private static int download(File dir, String name, String url, PageLink pl) {
+        if (!dir.exists()) {
+            try {
+                FileUtils.forceMkdir(dir);
+            } catch (IOException e) {
+                log.error(dir.getName() + " create fail");
+                return 0;
+            }
+        }
+
+        File target = new File(dir, name);
+        if (target.exists()) {
+            int length = Integer.parseInt(Long.toString(target.length()));
+            if (length < pl.getSize()) {
+                return resume(target, url, pl);
+            } else {
+                return 1;
+            }
+        }
+
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+
+        try {
+            // define http get
+            HttpGet httpGet = new HttpGet(url);
+            httpGet.addHeader("User-Agent", USER_AGENT_IPHONE6);
+            httpGet.addHeader("Referer", pl.getReferer2());
+
+            // execute http get
+            CloseableHttpResponse httpResponse = httpClient.execute(httpGet);
+            int statusCode = httpResponse.getStatusLine().getStatusCode();
+
+            if (200 == statusCode) {
+                HttpEntity entity = httpResponse.getEntity();
+                long size = httpResponse.getEntity().getContentLength();
+
+                // TODO: here need refactor
+                pl.setSize(Integer.parseInt(Long.toString(size)));
+                SqliteUtils.getInstance().updateSize(pl);
+
+                RandomAccessFile raf = new RandomAccessFile(target, "rw");
+
+                byte[] buffer = new byte[BUFFER];
+                int read;
+                long total = 0;
+                InputStream is = entity.getContent();
+                while ((read = is.read(buffer, 0, buffer.length)) != -1) {
+                    raf.write(buffer, 0, read);
+                    total += read;
+                    Progress.on(System.out, size).tick(total);
+
+                    // change line when finish
+                    if (total >= size) {
+                        System.out.println("");
+                    }
+                }
+                raf.close();
+                is.close();
+                return 1;
+            } else {
+                log.error("status code is " + statusCode);
+                return statusCode;
+            }
+        } catch (Exception e) {
+            log.error("download error is " + e.getMessage());
+        } finally {
+            try {
+                httpClient.close();
+            } catch (IOException e) {
+                // ignore this error
+            }
+        }
+        return 0;
+    }
+
+
+    private static int resume(File target, String url, PageLink pl) {
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+
+        try {
+            // define http get
+            HttpGet httpGet = new HttpGet(url);
+            httpGet.addHeader("User-Agent", USER_AGENT_IPHONE6);
+            httpGet.addHeader("Referer", pl.getReferer2());
+            // Range头域可以请求实体的一个或者多个子范围。例如，
+            // 表示头500个字节：bytes=0-499
+            // 表示第二个500字节：bytes=500-999
+            // 表示最后500个字节：bytes=-500
+            // 表示500字节以后的范围：bytes=500-
+            // 第一个和最后一个字节：bytes=0-0,-1
+            // 同时指定几个范围：bytes=500-600,601-999
+            httpGet.addHeader("Range", "bytes=" + target.length() + "-");
+
+            // execute http get
+            CloseableHttpResponse httpResponse = httpClient.execute(httpGet);
+            int statusCode = httpResponse.getStatusLine().getStatusCode();
+
+            if (206 == statusCode) {
+                HttpEntity entity = httpResponse.getEntity();
+                long size = pl.getSize();
+                RandomAccessFile raf = new RandomAccessFile(target, "rw");
+
+                // skip downloaded bytes
+                int finished = Integer.parseInt(Long.toString(target.length()));
+                raf.skipBytes(finished);
+
+                byte[] buffer = new byte[BUFFER];
+                int read;
+                long total = finished;
                 InputStream is = entity.getContent();
                 while ((read = is.read(buffer, 0, buffer.length)) != -1) {
                     raf.write(buffer, 0, read);

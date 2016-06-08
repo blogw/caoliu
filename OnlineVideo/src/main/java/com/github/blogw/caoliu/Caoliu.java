@@ -48,16 +48,6 @@ public class Caoliu {
                 log.info("insert " + pl.getTxt() + " error:" + e.getMessage());
             }
         }
-
-//        for (PageLink pl : links) {
-//            CaoliuParser.parse(pl);
-//            stack.push(pl);
-//
-//            // 刷新不要快于2秒
-//            Thread.sleep(1000);
-//        }
-//
-//        Obj2DiskUtils.serialize("d:/caoliu/tasks-" + ymd + ".obj", stack);
     }
 
     public static void main(String[] args) throws Exception {

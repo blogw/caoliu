@@ -7,7 +7,7 @@ Todo：
 2.失败写入log
 3.多线程下载1个文件
 4.gui
-5.判断是否支持断点续传
+5.判断是否支持断点续传 http status=206
 
 
 ffmpeg -i a.mp4 -s 240*426 -fs 5000K c.mp4
