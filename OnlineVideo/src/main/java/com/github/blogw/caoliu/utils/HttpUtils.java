@@ -122,7 +122,7 @@ public class HttpUtils {
                     total += read;
                     Progress.on(System.out, size).tick(total);
 
-                    // change line when finish
+                    // change line when updateStatus
                     if (total >= size) {
                         System.out.println("");
                     }
@@ -148,6 +148,11 @@ public class HttpUtils {
 
     public static int downloadVideo(File dir, PageLink pl) {
         log.info("download " + pl.getVideoUrl());
+
+        if (pl.getVideoUrl().indexOf("http://goo.gl/") >= 0) {
+            return -1;
+        }
+
         return download(dir, pl.getVideo(), pl.getVideoUrl(), pl);
     }
 
@@ -172,6 +177,7 @@ public class HttpUtils {
         }
 
         CloseableHttpClient httpClient = HttpClients.createDefault();
+        RandomAccessFile raf = null;
 
         try {
             // define http get
@@ -191,7 +197,7 @@ public class HttpUtils {
                 pl.setSize(Integer.parseInt(Long.toString(size)));
                 SqliteUtils.getInstance().updateSize(pl);
 
-                RandomAccessFile raf = new RandomAccessFile(target, "rw");
+                raf = new RandomAccessFile(target, "rw");
 
                 byte[] buffer = new byte[BUFFER];
                 int read;
@@ -202,12 +208,11 @@ public class HttpUtils {
                     total += read;
                     Progress.on(System.out, size).tick(total);
 
-                    // change line when finish
+                    // change line when updateStatus
                     if (total >= size) {
                         System.out.println("");
                     }
                 }
-                raf.close();
                 is.close();
                 return 1;
             } else {
@@ -219,7 +224,8 @@ public class HttpUtils {
         } finally {
             try {
                 httpClient.close();
-            } catch (IOException e) {
+                raf.close();
+            } catch (Exception e) {
                 // ignore this error
             }
         }
@@ -229,6 +235,7 @@ public class HttpUtils {
 
     private static int resume(File target, String url, PageLink pl) {
         CloseableHttpClient httpClient = HttpClients.createDefault();
+        RandomAccessFile raf = null;
 
         try {
             // define http get
@@ -251,7 +258,7 @@ public class HttpUtils {
             if (206 == statusCode) {
                 HttpEntity entity = httpResponse.getEntity();
                 long size = pl.getSize();
-                RandomAccessFile raf = new RandomAccessFile(target, "rw");
+                raf = new RandomAccessFile(target, "rw");
 
                 // skip downloaded bytes
                 int finished = Integer.parseInt(Long.toString(target.length()));
@@ -266,12 +273,11 @@ public class HttpUtils {
                     total += read;
                     Progress.on(System.out, size).tick(total);
 
-                    // change line when finish
+                    // change line when updateStatus
                     if (total >= size) {
                         System.out.println("");
                     }
                 }
-                raf.close();
                 is.close();
                 return 1;
             } else {
@@ -283,7 +289,8 @@ public class HttpUtils {
         } finally {
             try {
                 httpClient.close();
-            } catch (IOException e) {
+                raf.close();
+            } catch (Exception e) {
                 // ignore this error
             }
         }

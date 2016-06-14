@@ -6,6 +6,7 @@ import com.github.blogw.caoliu.utils.HtmlUtils;
 import com.github.blogw.caoliu.utils.HttpUtils;
 import com.github.blogw.caoliu.utils.SqliteUtils;
 import com.google.common.collect.Lists;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -42,8 +43,10 @@ public class Caoliu {
 
         for (PageLink pl : links) {
             try {
-                SqliteUtils.getInstance().insert(pl);
-                log.info("insert " + pl.getTxt());
+                if(StringUtils.isNoneBlank(pl.getTxt())) {
+                    SqliteUtils.getInstance().insert(pl);
+                    log.info("insert " + pl.getTxt());
+                }
             } catch (SQLException e) {
                 log.info("insert " + pl.getTxt() + " error:" + e.getMessage());
             }

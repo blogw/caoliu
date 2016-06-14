@@ -15,6 +15,9 @@ public class ParseUtils {
      * @return 文件名
      */
     public static String nameFromUrl(String url) {
+        if (url.endsWith("/")) {
+            url = url.substring(0, url.length() - 1);
+        }
         int p1 = url.lastIndexOf("/") + 1;
         int p2 = url.indexOf("?");
         if (p2 > 0) {
@@ -31,5 +34,13 @@ public class ParseUtils {
         se.put("sb", sb);
         se.eval(js);
         return sb.toString();
+    }
+
+    public static void main(String[] args) {
+        String url="12345/";
+        if (url.endsWith("/")) {
+            url = url.substring(0, url.length() - 1);
+        }
+        System.out.println(url);
     }
 }

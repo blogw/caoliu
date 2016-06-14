@@ -28,18 +28,20 @@ public class CaoliuParser {
             } else {
                 if (page1.indexOf("up2stream.com") > 0) {
                     pl.setType(VedioType.UP2STREAM);
-                    Pattern p = Pattern.compile("getElementById\\('iframe1'\\)\\.src='(.*?)'", Pattern.DOTALL | Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
-                    Matcher m = p.matcher(page1);
-                    if (m.find()) {
-                        up2stream(m.group(1), pl);
-                    }
+//                    Pattern p = Pattern.compile("getElementById\\('iframe1'\\)\\.src='(.*?)'", Pattern.DOTALL | Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
+//                    Matcher m = p.matcher(page1);
+//                    if (m.find()) {
+//                        up2stream(m.group(1), pl);
+//                    }
                 } else if (page1.indexOf("ppt.cc") > 0) {
                     pl.setType(VedioType.PPT);
-                    Pattern p = Pattern.compile("getElementById\\('iframe1'\\)\\.src='(.*?)'", Pattern.DOTALL | Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
-                    Matcher m = p.matcher(page1);
-                    if (m.find()) {
-                        pptcc(m.group(1), pl);
-                    }
+//                    Pattern p = Pattern.compile("getElementById\\('iframe1'\\)\\.src='(.*?)'", Pattern.DOTALL | Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
+//                    Matcher m = p.matcher(page1);
+//                    if (m.find()) {
+//                        pptcc(m.group(1), pl);
+//                    }
+                } else if (page1.indexOf("99qq2.com") > 0) {
+                    pl.setType(VedioType.QQ2);
                 } else if (page1.indexOf("9p91.com") > 0) {
                     DetailPageParser p = (DetailPageParser) Class.forName("com.github.blogw.caoliu.parser.Parser9P91").newInstance();
                     p.parse(page1, pl);
@@ -59,7 +61,7 @@ public class CaoliuParser {
                     DetailPageParser p = (DetailPageParser) Class.forName("com.github.blogw.caoliu.parser.ParserVideoShare").newInstance();
                     p.parse(page1, pl);
                 } else {
-                    System.out.println(pl.getTxt() + "==>" + pl.getUrl());
+                    System.out.println(pl.getTxt() + "========>" + pl.getUrl());
                     //TODO: save to disk
                 }
             }
@@ -109,7 +111,7 @@ public class CaoliuParser {
         if (m.find()) {
             String u = m.group(1);
             // 加入扰乱字符导致eval报错：Method code too large!
-            u = u.substring(0, u.indexOf('\n'))+";";
+            u = u.substring(0, u.indexOf('\n')) + ";";
             u = u.replaceAll("return p", "return sb.append(p)");
             u = evalScript(u);
 

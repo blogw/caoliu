@@ -1,5 +1,6 @@
 package com.github.blogw.caoliu.utils;
 
+import com.github.blogw.caoliu.VedioType;
 import com.github.blogw.caoliu.beans.PageLink;
 import com.github.blogw.caoliu.constant.DbConstants;
 import com.github.blogw.caoliu.constant.WebConstants;
@@ -126,6 +127,30 @@ public class SqliteUtils {
                 videook);
     }
 
+    public int backup(PageLink p) throws SQLException {
+        String posterName = p.getPoster() == null ? "99999.999" : p.getPoster();
+        String videoName = p.getVideo() == null ? "99999.999" : p.getVideo();
+        File poster = new File(WebConstants.SAVE_FOLDER + p.getTxt(), posterName);
+        File video = new File(WebConstants.SAVE_FOLDER + p.getTxt(), videoName);
+        int posterok = poster.exists() ? 1 : 0;
+        int videook = video.exists() ? 1 : 0;
+
+        return this.execute(DbConstants.BACKUP_TABLE_INSERT_SQL,
+                p.getHref(),
+                CaoliuUtils.folderNameFilter(p.getTxt()),
+                p.getVideoUrl() == null ? "" : p.getVideoUrl().toString(),
+                p.getPoster() == null ? "" : p.getPoster().toString(),
+                p.getVideoUrl() == null ? "" : p.getVideoUrl().toString(),
+                p.getVideo() == null ? "" : p.getVideo().toString(),
+                p.getTime() == null ? "" : p.getTime().toString(),
+                p.getReferer1() == null ? "" : p.getReferer1().toString(),
+                p.getReferer2() == null ? "" : p.getReferer2().toString(),
+                p.getSize(),
+                p.getType() == null ? "" : p.getType().toString(),
+                posterok,
+                videook);
+    }
+
     //UPDATE video SET poster=?,postername=?,video=?,videourl=?,referer2=?,type=? WHERE id=?
     public int update(PageLink p) throws SQLException {
         return this.execute(DbConstants.VIDEO_TALBE_UPDATE_POSTER_SQL,
@@ -141,11 +166,16 @@ public class SqliteUtils {
         );
     }
 
-    public int finish(String ok1, String ok2, String id) throws SQLException {
+    public int updateStatus(String ok1, String ok2, String id) throws SQLException {
         return this.execute(DbConstants.VIDEO_TALBE_UPDATE_FINISH, ok1, ok2, id);
     }
 
     public int delete(String id) throws SQLException {
+        List<HashMap<String, String>> list = SqliteUtils.getInstance().select("select * from video where id=" + id);
+        if (list.size() > 0) {
+            PageLink pl = SqliteUtils.convert(list.get(0));
+            SqliteUtils.getInstance().backup(pl);
+        }
         return this.execute(DbConstants.VIDEO_TALBE_DELETE_SQL, id);
     }
 
@@ -161,5 +191,22 @@ public class SqliteUtils {
         int result = pstm.executeUpdate();
         pstm.close();
         return result;
+    }
+
+    public static PageLink convert(HashMap<String, String> map) {
+        PageLink pl = new PageLink();
+        pl.setId(map.get("id"));
+        pl.setTxt(map.get("txt"));
+        pl.setVideo(map.get("videoname"));
+        pl.setVideoUrl(map.get("video"));
+        pl.setPoster(map.get("postername"));
+        pl.setPosterUrl(map.get("poster"));
+        pl.setHref(map.get("url"));
+        pl.setReferer1(map.get("referer1"));
+        pl.setReferer2(map.get("referer2"));
+        pl.setSize(Integer.parseInt(map.get("size")));
+        pl.setTime(map.get("time"));
+        pl.setType(VedioType.getByName(map.get("type")));
+        return pl;
     }
 }
