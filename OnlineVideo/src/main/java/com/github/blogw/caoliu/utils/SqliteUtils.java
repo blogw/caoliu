@@ -174,8 +174,16 @@ public class SqliteUtils {
         List<HashMap<String, String>> list = SqliteUtils.getInstance().select("select * from video where id=" + id);
         if (list.size() > 0) {
             PageLink pl = SqliteUtils.convert(list.get(0));
-            SqliteUtils.getInstance().backup(pl);
+            try {
+                SqliteUtils.getInstance().backup(pl);
+            } catch (Exception e) {
+                //ignore
+            }
         }
+        return this.execute(DbConstants.VIDEO_TALBE_DELETE_SQL, id);
+    }
+
+    public int deleteNotBackup(String id) throws SQLException {
         return this.execute(DbConstants.VIDEO_TALBE_DELETE_SQL, id);
     }
 

@@ -19,11 +19,11 @@ import java.util.List;
  * <p>
  * Created by blogw on 2016/05/29.
  */
-public class DownloadDBVideoTools {
-    private static Log log = LogFactory.getLog(DownloadDBVideoTools.class);
+public class DownloadBackupVideoTools {
+    private static Log log = LogFactory.getLog(DownloadBackupVideoTools.class);
 
-    public static void action() throws Exception {
-        List<HashMap<String, String>> list = SqliteUtils.getInstance().select("select * from video where posterok!='1' or videook!='1' order by time");
+    public static void main(String[] args) throws Exception {
+        List<HashMap<String, String>> list = SqliteUtils.getInstance().select("select * from backup where posterok!='1' or videook!='1' order by time");
 
         for (HashMap<String, String> map : list) {
             String posterok = map.get("posterok");
@@ -38,7 +38,7 @@ public class DownloadDBVideoTools {
                 CaoliuParser.parse(pl);
                 if (StringUtils.isEmpty(pl.getPosterUrl()) || StringUtils.isEmpty(pl.getVideoUrl())) {
                     // url still empty after parse
-                    SqliteUtils.getInstance().delete(pl.getId());
+                    SqliteUtils.getInstance().deleteNotBackup(pl.getId());
                     FileUtils.deleteDirectory(dir);
                     log.info("can not parse this url,remove it");
                     continue;
@@ -66,18 +66,13 @@ public class DownloadDBVideoTools {
                     SqliteUtils.getInstance().update(pl);
                     int bb = HttpUtils.downloadVideo(dir, pl);
                     if (bb == 1) videook = "1";
-                    if(bb==404){
-                        SqliteUtils.getInstance().delete(pl.getId());
-                        FileUtils.deleteDirectory(dir);
-                        log.info("can not download,remove it");
-                    }
                 } else {
                     // download error
                     videook = "0";
                     if (b < 0) {
                         SqliteUtils.getInstance().delete(pl.getId());
                         FileUtils.deleteDirectory(dir);
-                        log.info("can not download,remove it");
+                        log.info("can not download http://goo.gl,remove it");
                     }
                 }
 
@@ -86,8 +81,5 @@ public class DownloadDBVideoTools {
             SqliteUtils.getInstance().updateStatus(posterok, videook, pl.getId());
         }
     }
-
-    public static void main(String[] args) throws Exception {
-        action();
-    }
 }
+//TODO: move downloaded url from backup to video

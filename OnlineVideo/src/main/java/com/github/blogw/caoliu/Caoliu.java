@@ -55,7 +55,7 @@ public class Caoliu {
 
     public static void main(String[] args) throws Exception {
         // analyze all link of page, got poster and video url from this links and save to disk
-        String url = "http://og.90cl.org/thread0806.php?fid=22";
+        String url = "http://cl.juedoo.com/thread0806.php?fid=22";
         Caoliu cl = new Caoliu(url);
         cl.parse();
     }

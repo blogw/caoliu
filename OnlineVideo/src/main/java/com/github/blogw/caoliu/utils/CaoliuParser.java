@@ -45,7 +45,7 @@ public class CaoliuParser {
                 } else if (page1.indexOf("9p91.com") > 0) {
                     DetailPageParser p = (DetailPageParser) Class.forName("com.github.blogw.caoliu.parser.Parser9P91").newInstance();
                     p.parse(page1, pl);
-                } else if (page1.indexOf("avtaobao.me") > 0) {
+                } else if (page1.indexOf("avtaobao") > 0) {
                     DetailPageParser p = (DetailPageParser) Class.forName("com.github.blogw.caoliu.parser.ParserAVTaoBao").newInstance();
                     p.parse(page1, pl);
                 } else if (page1.indexOf("tadpoles.online") > 0) {
@@ -55,7 +55,10 @@ public class CaoliuParser {
                     DetailPageParser p = (DetailPageParser) Class.forName("com.github.blogw.caoliu.parser.ParserP9P").newInstance();
                     p.parse(page1, pl);
                 } else if (page1.indexOf("qingyule.me") > 0) {
-                    DetailPageParser p = (DetailPageParser) Class.forName("com.github.blogw.caoliu.parser.ParserP9P").newInstance();
+                    DetailPageParser p = (DetailPageParser) Class.forName("com.github.blogw.caoliu.parser.ParserQingYuLe").newInstance();
+                    p.parse(page1, pl);
+                } else if (page1.indexOf("qyule8.com") > 0) {
+                    DetailPageParser p = (DetailPageParser) Class.forName("com.github.blogw.caoliu.parser.ParserQingYuLe").newInstance();
                     p.parse(page1, pl);
                 } else if (page1.indexOf("videoshare.space") > 0) {
                     DetailPageParser p = (DetailPageParser) Class.forName("com.github.blogw.caoliu.parser.ParserVideoShare").newInstance();

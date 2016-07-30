@@ -4,6 +4,7 @@ import com.github.blogw.caoliu.VedioType;
 import com.github.blogw.caoliu.beans.PageLink;
 import com.github.blogw.caoliu.utils.HttpUtils;
 import com.github.blogw.caoliu.utils.ParseUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,6 +27,7 @@ public class ParserQingYuLe implements DetailPageParser {
         try {
             pl.setReferer2(url);
             String page = HttpUtils.readUrl(url);
+            //qingyule.me
             Pattern p = Pattern.compile("<video.*poster=\"(.*?)\".*src=\"(.*?)\"", Pattern.DOTALL | Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
             Matcher m = p.matcher(page);
             if (m.find()) {
@@ -36,6 +38,17 @@ public class ParserQingYuLe implements DetailPageParser {
                 String file = m.group(2);
                 pl.setVideoUrl(file);
                 pl.setVideo(ParseUtils.nameFromUrl(file));
+            }
+
+            //qyule8.com
+            if(StringUtils.isEmpty(pl.getVideoUrl())){
+                p = Pattern.compile("<source.*src=\"(.*?)\"", Pattern.DOTALL | Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
+                m = p.matcher(page);
+                if (m.find()) {
+                    String file = m.group(1);
+                    pl.setVideoUrl(file);
+                    pl.setVideo(ParseUtils.nameFromUrl(file));
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
